@@ -1,0 +1,31 @@
+﻿@using TestTask.Models
+@model IEnumerable<DomainModel>
+@{
+    ViewBag.Title = "GetSavedDomains";
+}
+
+<h2>GetSavedDomains</h2>
+
+<table class="table table-responsive">
+    <thead>
+        <tr>
+            <th>
+                Domain
+            </th>
+            <th>Time </th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach(var url in Model)
+        {
+            <tr>
+                <td>
+@url.Domain
+                </td>
+                <td>
+@Html.ActionLink(url.RecordTime.ToString(), "GetSavedMeasurements/"+url.ID)
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

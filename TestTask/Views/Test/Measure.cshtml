@@ -1,0 +1,100 @@
+﻿<script src="http://code.highcharts.com/highcharts.js"></script>
+<script src="http://code.highcharts.com/modules/exporting.js"></script>
+@using TestTask.Models
+@model IEnumerable<UrlMeasurement>
+@{
+    ViewBag.Title = "Measure";
+}
+
+<h2>Measure</h2>
+
+<div id="chartDiv">
+
+</div>
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th>Url</th>
+            <th>Min Time Request</th>
+            <th>Max Time Request</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var url in Model)
+        {
+            <tr>
+                <td>@url.Url</td>
+                <td>@url.MinTime</td>
+                <td>@url.MaxTime</td>
+            </tr>
+        }
+    </tbody>
+</table>
+<script type="text/javascript">
+
+    $(function () {
+        var domainId=@Model.First().DomainModelID;
+        $.ajax({
+            url: '/Test/GetDataToChart/?domainId='+domainId,
+            type: "GET",
+                 success: function (data) {
+                 var series = new Array();
+                for (var i in data) {
+                    var serie = new Array(data[i].Url, data[i].MaxTime);
+                    series.push(serie);
+                }
+                DrawPieChart(series);
+            },
+            error: function (xhr) {
+                alert('error');
+            }
+        });
+    });
+    function DrawPieChart(series) {
+        var xValue = new Array();
+        for (var i in series) {
+            var x = series[i].shift();
+              xValue.push(x);
+        }
+
+        var myChart = Highcharts.chart('chartDiv', {
+            colors: ['#058DC7'],
+                      chart:
+            {
+                spacingBottom: 85,
+                spacingTop: 10,
+                spacingLeft: 70,
+                spacingRight: 10,
+            },
+            title: {
+                text: 'Request Measuring'
+            },
+            xAxis: {
+                categories: xValue
+
+            },
+            yAxis: {
+                title: {
+                    text: 'Max Request Time, ms'
+                }
+            },
+
+            legend: {
+                layout: 'vertical',
+                align: 'right',
+                verticalAlign: 'middle'
+            },
+            plotOptions: {
+                series: {
+                    xValue
+                }
+            },
+            series: [{
+                name: "Max Request Time(ms)",
+                data: series
+            }
+            ],
+                    });
+
+    }
+</script>  
